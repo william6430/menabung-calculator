@@ -1,0 +1,162 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabungan Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        main {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            font-size: 20px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #333;
+        }
+
+        input,
+        select,
+        button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 5px 0 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            font-size: 16px;
+            color: #333;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #returnInfo {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>Tabungan Calculator</header>
+
+        <label for="merk_barang">Merk Barang:</label>
+        <input type="text" id="merk_barang" required>
+
+        <label for="harga_barang">Harga Barang (Rp):</label>
+        <input type="number" id="harga_barang" required>
+
+        <label for="tabungan_harian">Jumlah Tabungan Harian (Rp):</label>
+        <input type="number" id="tabungan_harian" required>
+
+        <label for="tempat_menabung">Tempat Menabung:</label>
+        <select id="tempat_menabung" required>
+            <option value="bank">Bank</option>
+            <option value="asset">Asset</option>
+            <option value="saham">Saham</option>
+        </select>
+
+        <button onclick="hitungTabungan()">Hitung Tabungan</button>
+
+        <div id="result"></div>
+        <div id="returnInfo"></div>
+    </main>
+
+    <script>
+        function hitungTabungan() {
+            var merk_barang = document.getElementById("merk_barang").value;
+            var harga_barang = parseFloat(document.getElementById("harga_barang").value);
+            var tabungan_harian = parseFloat(document.getElementById("tabungan_harian").value);
+            var tempat_menabung = document.getElementById("tempat_menabung").value;
+
+            var return_rate = 0;
+            var return_description = '';
+
+            if (tempat_menabung === 'bank') {
+                return_rate = 0.02 / 365 * 30;  // Adjusted for one month
+                return_description = 'Bank (2% per month)';
+            } else if (tempat_menabung === 'asset') {
+                return_rate = 0.04 / 365 * 30;  // Adjusted for one month
+                return_description = 'Asset (4% per month)';
+            } else if (tempat_menabung === 'saham') {
+                return_rate = 0.08 / 365 * 30;  // Adjusted for one month
+                return_description = 'Saham (8% per month)';
+            }
+
+            // Calculate total return over one month
+            var total_return = Math.pow((1 + return_rate), 30) - 1;
+
+            var total_tabungan = 0;
+            var hari = 0;
+
+            while (total_tabungan < harga_barang) {
+                hari += 1;
+                total_tabungan += tabungan_harian;
+                total_tabungan *= (1 + return_rate);
+            }
+
+            var sisa_harga_barang = harga_barang - total_tabungan;
+            var resultMessage;
+
+            if (sisa_harga_barang > 0) {
+                resultMessage = "Anda membutuhkan tambahan tabungan sebesar Rp " + sisa_harga_barang.toFixed(2) + " untuk membeli " + merk_barang + ".";
+            } else {
+                resultMessage = "Anda telah mencukupi tabungan dalam " + hari + " hari untuk membeli " + merk_barang + ". Jumlah uang yang terkumpul: Rp " + total_tabungan.toFixed(2);
+            }
+
+            var returnText = "Return bulanan dari " + return_description + ": " + (total_return * 100).toFixed(2) + "%";
+
+            document.getElementById("result").innerHTML = resultMessage;
+            document.getElementById("returnInfo").innerHTML = returnText;
+        }
+    </script>
+</body>
+
+</html>
